@@ -5,7 +5,7 @@ UNITDIR = $(shell rpm --eval '%{_unitdir}')
 VERSIONED_NAME = $(NAME)-$(VERSION)
 
 DESTDIR = /
-PYTHON_SITELIB = /usr/lib/python2.7/site-packages
+PYTHON_SITELIB = /usr/lib/python2.7/dist-packages
 TUNED_PROFILESDIR = /usr/lib/tuned
 
 archive: clean
@@ -28,6 +28,10 @@ build:
 	# nothing to build
 
 install:
+	@echo "prerequisites: python-decorator python-dbus python-gobject python-pyudev"
+	@echo "press Enter to continue"
+	@read "DISGARD__"
+
 	mkdir -p $(DESTDIR)
 
 	# library
@@ -69,12 +73,17 @@ install:
 	install -m 0644 tuned.tmpfiles $(DESTDIR)/etc/tmpfiles.d/tuned.conf
 
 	# systemd units
-	mkdir -p $(DESTDIR)$(UNITDIR)
-	install -m 0644 tuned.service $(DESTDIR)$(UNITDIR)/tuned.service
+	# mkdir -p $(DESTDIR)$(UNITDIR)
+	# install -m 0644 tuned.service $(DESTDIR)$(UNITDIR)/tuned.service
+
+	# initctl job
+	install -m 644 tuned.upstart.conf $(DESTDIR)/etc/init/tuned.conf
+	ln -s -f /lib/init/upstart-job /etc/init.d/tuned
 
 	# dbus configuration
 	mkdir -p $(DESTDIR)/etc/dbus-1/system.d
 	install -m 0644 dbus.conf $(DESTDIR)/etc/dbus-1/system.d/com.redhat.tuned.conf
+	initctl restart dbus
 
 	# manual pages *.8
 	mkdir -p $(DESTDIR)/usr/share/man/man8
