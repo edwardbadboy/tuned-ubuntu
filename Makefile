@@ -28,7 +28,7 @@ build:
 	# nothing to build
 
 install:
-	@echo "prerequisites: python-decorator python-dbus python-gobject python-pyudev"
+	@echo "prerequisites: rpm python-decorator python-dbus python-gobject python-pyudev python-configobj"
 	@echo "press Enter to continue"
 	@read "DISGARD__"
 
@@ -83,7 +83,6 @@ install:
 	# dbus configuration
 	mkdir -p $(DESTDIR)/etc/dbus-1/system.d
 	install -m 0644 dbus.conf $(DESTDIR)/etc/dbus-1/system.d/com.redhat.tuned.conf
-	initctl restart dbus
 
 	# manual pages *.8
 	mkdir -p $(DESTDIR)/usr/share/man/man8
